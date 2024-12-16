@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asia Design Industry 2024</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            line-height: 1.5;
+            background-color: #f9f9f9;
+        }
+        .container {
+            max-width: 70%;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            padding: 20px 0;
+        }
+        h1 {
+            color: #5c258d;
+            font-size: 2.5rem;
+            margin: 20px 0;
+        }
+        h2 {
+            color: #5c258d;
+            font-size: 1.8rem;
+        }
+        .image-section img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+        .content {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        .intro, .objective {
+            background: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 10px;
+            flex: 1;
+            min-width: 300px;
+        }
+        p {
+            margin: 0 0 10px;
+        }
+        .button-container {
+            text-align: center;
+            margin: 40px 0;
+        }
+        .button-container a {
+            text-decoration: none;
+            background-color: #5c258d;
+            color: #fff;
+            padding: 15px 40px;
+            border-radius: 25px;
+            font-weight: bold;
+            display: inline-block;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+        }
+        .button-container a:hover {
+            background-color: #462174;
+        }
+        .chart-description {
+            margin-bottom: 20px;
+            font-size: 1rem;
+            color: #333;
+            line-height: 1.6;
+        }
+        #chart {
+            width: 100%;
+            height: 500px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Heading -->
+        <div class="header">
+            <h1>Charting Design: A Data-Driven Snapshot of Asia's Design Industry in 2024</h1>
+        </div>
+        <!-- Image -->
+        <div class="image-section">
+            <img src="header.jpg" alt="Design Industry Visuals">
+        </div>
+        <!-- Content Sections -->
+        <div class="content">
+            <div class="intro">
+                <h2>Introduction</h2>
+                <p>
+                    The design industry in Asia has experienced remarkable growth and transformation in recent years, driven by the rapid tech boom and an increased demand for design professionals in technology roles, especially post-COVID-19. This influx of talent has also sparked critical conversations around fair compensation.
+                </p>
+                <p>
+                    In response, initiatives like Design Pay Asia strive to democratize pay data, offering actionable insights that empower designers to engage in transparent and informed discussions about salaries, fostering a more equitable industry landscape.
+                </p>
+            </div>
+            <div class="objective">
+                <h2>Our Objective</h2>
+                <p>
+                    Help emerging designers make informed career decisions by visualizing key data points related to demographics, compensation, education, experience, career paths, and industry trends.
+                </p>
+                <p><strong>Data Source:</strong> <a href="https://docs.google.com/spreadsheets/d/17BpODawpHg6jD_gAIq3H6QM90n1F9tfzdo7LfRy1P8E/edit?gid=0#gid=0" target="_blank">Google Sheet</a></p>
+            </div>
+        </div>
+        <!-- Button -->
+        <div class="button-container">
+            <a href="https://tally.so/r/3EDeGX" target="_blank">Contribute to the survey</a>
+        </div>
+        <!-- Understanding the Data Section -->
+        <h2>Understanding the Data</h2>
+        <h3>Demography</h3>
+        <!-- Chart Description -->
+        <div class="chart-description" id="chart-description">
+            Loading chart description...
+        </div>
+        <!-- Chart -->
+        <div id="chart"></div>
+    </div>
+
+    <script>
+        // Viridis color palette
+        const viridisColors = ["#440154", "#777BE0", "#FDE725","#089BC5", "#00CA91", "#7AD151" ];
+
+        // Load CSV data
+        Papa.parse("dataset_1.csv", {
+            download: true,
+            header: true,
+            complete: function(results) {
+                const data = results.data;
+                processAndRenderChart(data);
+            }
+        });
+
+        function processAndRenderChart(data) {
+            // Filter valid data
+            const filteredData = data.filter(row => row["Exclude"] !== "Y" && row["Gender"] && row["Gender"] !== "Prefer not to respond" && row["Country you live and work in"]);
+
+            // Group by country and gender
+            const countryGenderMap = {};
+            filteredData.forEach(row => {
+                const country = row["Country you live and work in"].trim();
+                const gender = row["Gender"].trim();
+                if (!countryGenderMap[country]) countryGenderMap[country] = {};
+                countryGenderMap[country][gender] = (countryGenderMap[country][gender] || 0) + 1;
+            });
+
+            // Sort countries and build series
+            const sortedCountries = Object.entries(countryGenderMap)
+                .map(([country, genders]) => ({
+                    country,
+                    total: Object.values(genders).reduce((a, b) => a + b, 0)
+                }))
+                .sort((a, b) => a.total - b.total)
+                .map(item => item.country);
+
+            const genders = [...new Set(filteredData.map(row => row["Gender"]))];
+            const seriesData = genders.map((gender, index) => ({
+                name: gender,
+                type: 'bar',
+                stack: 'total',
+                itemStyle: { color: viridisColors[index % viridisColors.length] },
+                data: sortedCountries.map(country => countryGenderMap[country][gender] || null)
+            }));
+
+            // Dynamic chart description
+            const maxCountry = sortedCountries[sortedCountries.length - 1];
+            const minCountry = sortedCountries[0];
+            document.getElementById("chart-description").innerHTML =
+                `The chart shows that <strong>${maxCountry}</strong> has the highest representation, while <strong>${minCountry}</strong> has the lowest representation.`;
+
+            // Render chart
+            const chart = echarts.init(document.getElementById("chart"));
+            chart.setOption({
+                tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+                legend: { data: genders },
+                grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+                xAxis: { show: false },
+                yAxis: { type: 'category', data: sortedCountries },
+                series: seriesData
+            });
+        }
+    </script>
+</body>
+</html>
