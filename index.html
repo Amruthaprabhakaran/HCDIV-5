@@ -1,3 +1,4 @@
+<!-- This Assignment was submitted by Amrutha Prabhakaran(1009609) & Karis Ong Xin Le(1009701) for HCDIV-Assignment-5 2024-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -140,6 +141,28 @@
         .insights h3 {
             margin-top: 0;
         }
+        .takeaway {
+            background: #fff;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .challenges {
+            background: #fff;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .nextsteps {
+            background: #fff;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
     </style>
 </head>
 <body>
@@ -227,7 +250,7 @@
         <!-- A) Compensation patterns by country and gender -->
         <h4>A) Compensation patterns by country and gender</h4>
         <p>
-            The box plot below provides a view of annual total compensation (in SGD) across different countries, segmented by gender. This visualization helps identify disparities and trends in earnings based on both location and gender, offering insights into where pay gaps may exist or where compensation is more equitable.
+            Our analysis revealed Singapore as the regional salary leader, offering the highest compensation across all positions, while Indonesia maintained the lowest rates. Notably, we found comparable salary levels between male and female employees across all countries, suggesting strong wage parity in the Southeast Asian job market. We noticed that in Thailand, while men and women earn similar salaries in general, the men have a higher maximum, indicating perhaps that more of the men surveyed were in senior positions or more prominent roles.
         </p>
         <div class="filter-container">
             <label for="genderDropdown">Gender:</label>
@@ -242,7 +265,7 @@
         <!-- B) Impact of design education on compensation -->
         <h4>B) Impact of design education on compensation</h4>
         <p>
-            The box plot below compares annual total compensation (in SGD) between designers with formal/informal design-related education and those without, segmented by country. This analysis sheds light on how educational background influences earning potential within the design industry across different regions.
+            Our analysis of Southeast Asian design salaries reveals intriguing disparities in the relationship between design education and wages: Thailand shows higher maximum wages for those with design education, while Indonesia, Vietnam, and Malaysia show minimal wage differences regardless of education. Notably, Singapore presents an inverse relationship, where designers without formal education generally earn more, with only outlier salaries favoring those with design credentials. Our assumption is that this is more of a reflection of the pre-COVID market. In any case, it's precisely these exceptional cases that inspire our pursuit of a master's degree – we're aiming to position ourselves among those high-achieving outliers!
         </p>
         <div class="filter-container">
             <label for="countryDropdownEducation">Country:</label>
@@ -253,7 +276,7 @@
         <!-- C) Impact of Education and Experience on Annual Salary(SGD) -->
         <h4>C) Impact of Education and Experience on Annual Salary(SGD)</h4>
         <p class="chart-description">
-            This Sankey chart visualizes the flow from education to experience and finally to annual salary in SGD for designers within a selected country. It highlights the pathways that designers take from their educational background through their years of experience to their current compensation levels.
+            This Sankey diagram maps designers' career trajectories, showing how education and years of design experience flow into salary levels. For those with master's degrees like us, the visualization reveals most designers achieve salaries between $30-$60k, offering insight into typical compensation patterns for our educational background.
         </p>
         <div class="filter-container">
             <label for="sankeyCountrySelect">Country:</label>
@@ -264,7 +287,7 @@
         <!-- D) Company size vs. Top 5 industries -->
         <h4>D) Company size vs. Top 5 industries</h4>
         <p class="chart-description">
-            This heatmap shows the median annual total compensation (in SGD) for designers across the top five industries and various company sizes within a selected country. It helps in understanding how industry and company scale impact salary levels.
+            Designers command the highest salaries in education, retail, consumer, finance, and technology sectors, with retail and finance offering the highest compensation, while education provides relatively lower salaries. Notably, designers in the education sector typically work within smaller team environments. In Singapore specifically, designers earn higher salaries when working in large companies (10,001+ employees) within retail/wholesale and financial services.
         </p>
         <div class="filter-container">
             <label for="heatmapCountrySelect">Country:</label>
@@ -282,6 +305,33 @@
             <select id="fieldCountrySelect" style="padding: 5px; border-radius: 4px; border: 1px solid #ccc;"></select>
         </div>
         <div id="fieldChart" style="height: 600px;"></div>
+        <!-- Challenges Block -->
+    <div class="challenges">
+        <h2>Data Processing Challenges and Insights </h2>
+        <p>
+            The complexity of working with raw survey data became immediately apparent in our analysis process. While we previously benefited from Chi-Loong's pre-cleaned datasets, this project required extensive data cleaning and standardization efforts. We encountered numerous challenges, from mapping free-text responses in 'others' fields to handling incorrect inputs (such as company names listed under 'primary field of work'). A significant realization was the subjective nature of many responses, particularly those relying on self-assessment, which required careful consideration when making assumptions during the cleaning process. Cultural context proved especially crucial - for instance, our initial assumptions about regional salary differences were challenged when visualizations revealed variations far greater than the expected one to two-fold difference. This experience highlighted the importance of thorough data exploration and understanding before attempting meaningful visualization work.
+        </p>
+     </div>
+     <!-- Takeaway Block -->
+     <div class="takeaway">
+        <h2>What it Means for Designers in Singapore</h2>
+        <p>
+            Considering most of us are designers who may develop our careers in Singapore, it is good to see that designers get paid the highest in Singapore amongst all the South-East Asian countries in this survey, there's not much disparity between genders and there are also opportunities to do well for designers without design education (which signals that companies value skill more than qualification). But the higher wages could also explain why an increasing number of companies are choosing to lay off their design teams and outsource the work to designers in the neighbouring countries (e.g. lots of visual-related skilled designers responded from Indonesia, perhaps there's a correlation to how engaged they are in our local scene?)
+        </p>
+     </div>
+     <!-- Next steps Block -->
+     <div class="nextsteps">
+        <h2>Next Steps</h2>
+        <p>
+            Now that we know that it is a lot of hard work, we can appreciate the efforts by the DPA team to collate and make sense of the data for the benefit of the community.
+        </p>
+        <p>
+            We can look forward to DPA's full 2024 report on the market after the survey is closed. 
+        </p>
+        <p>
+            In the meantime, check out DPA's 2023 report. <a href=https://designpay.asia/2023-report target="_blank">DPA 2023 Report</a>
+        </p>
+     </div>
 
     </div>
 
@@ -1313,5 +1363,6 @@
         }
 
     </script>
+    
 </body>
 </html>
