@@ -24,7 +24,7 @@
             padding: 20px;
         }
         .header {
-            text-align: center;
+            text-align: left;
             padding: 20px 0;
         }
         h1 {
@@ -32,10 +32,14 @@
             font-size: 2.5rem;
             margin: 20px 0;
         }
+        .subheader {
+            text-align: left;
+            padding: 12px 0;
+        }
         h2 {
-            color: #5c258d;
-            font-size: 1.8rem;
-            margin-top: 30px;
+            color: #000000;
+            font-size: 1.2rem;
+            margin-top: 10px;
         }
         h3 {
             font-size: 1.4rem;
@@ -139,6 +143,9 @@
         <div class="header">
             <h1>Charting Design: A Data-Driven Snapshot of Asia's Design Industry in 2024</h1>
         </div>
+        <div class="subheader">
+            <h2>by Amrutha Prabhakaran (1009609) & Karis Ong Xin Le (1009701)</h2>
+        </div>
         <!-- Image -->
         <div class="image-section">
             <img src="header.jpeg" alt="Design Industry Visuals">
@@ -160,6 +167,9 @@
                     Help emerging designers make informed career decisions by visualizing key data points related to demographics, compensation, education, experience, career paths, and industry trends.
                 </p>
                 <p><strong>Data Source:</strong> <a href="https://docs.google.com/spreadsheets/d/17BpODawpHg6jD_gAIq3H6QM90n1F9tfzdo7LfRy1P8E/edit?gid=0#gid=0" target="_blank">Google Sheet</a></p>
+                <p>
+                    As the survey is still collecting responses, we will we will focus on data collected from 1 October - 10 December 2024 only. 
+                </p>       
             </div>
         </div>
         
@@ -173,26 +183,23 @@
         
         <!-- Insights Block -->
         <div class="insights">
-            <h3>Overview:</h3>
+            <h3>Approach:</h3>
             <p>
-                The data shows a significant concentration of designers in certain countries and within specific age groups. For instance, some countries clearly emerge as having a higher proportion of design professionals, while certain age brackets dominate the design landscape, possibly reflecting recent shifts in career trajectories.
-            </p>
-            <p>
-                By comparing countries and ages, we can observe patterns such as a younger demographic leaning into design roles in tech hubs, while more established markets may show a balanced spread across different ages. This information can guide emerging designers towards regions and age cohorts that align with their career expectations.
+                When we first examined the dataset, it became clear that extensive cleaning was required. This involved limiting countries to those with sufficient data, standardizing job titles, mapping the primary fields of work, grouping salary ranges, and converting them to SGD, among others. This stage proved to be the most challenging and time-consuming part of our project. Before diving into the analysis, we began by examining basic demographic data.
             </p>
         </div>
         
         <!-- A) Distribution by Country -->
-        <h4>A) Distribution by Country</h4>
+        <h4>A) Distribution by Country and Gender</h4>
         <p class="chart-description">
-            This chart illustrates how the design workforce is distributed across different countries...
+            The survey data revealed Indonesia as the primary source of responses, with the largest participant pool among all countries surveyed. While male respondents dominated the overall sample, both Singapore and Thailand deviated from this pattern, showing higher proportions of female participants in their respective regions.
         </p>
         <div id="chart"></div>
         
         <!-- B) Distribution by Age -->
         <h4>B) Distribution by Age</h4>
         <p class="chart-description">
-            This chart shows how the design talent pool is distributed across different age ranges...
+            The survey revealed a predominantly young design community, with participants under 35 forming the majority. The 25-30 age bracket represented the largest group, while designers between 46-50 years were the least represented. This demographic profile is similar across all surveyed regions.
         </p>
         <div class="filter-container">
             <label for="countrySelect">Country:</label>
@@ -205,7 +212,7 @@
         <!-- C) Job Titles Word Cloud -->
         <h4>C) Job Titles Word Cloud</h4>
         <p class="chart-description">
-            This word cloud visualizes the frequency of various job titles...
+            The analysis of job titles revealed a clear hierarchy in design roles, with "UIUX Designer," "Project Designer," and "Graphic Designer" emerging as the most frequently cited positions. Though dedicated UI and UX specialists still maintain distinct identities in the field, the overwhelming preference for the combined title suggests a demand for practitioners who can navigate both domains with equal proficiency.
         </p>
         <div id="jobTitleCloud"></div>
 
@@ -263,7 +270,7 @@
         <!-- E) Compensation by Primary Field -->
         <h4>E) Compensation by Primary Field</h4>
         <p class="chart-description">
-            This chart shows the average annual compensation by primary field of work for the selected country.
+            Our analysis of design compensation across different countries reveals that leadership positions generally command the highest salaries, likely reflecting the accumulated years of experience required for such roles. Beyond this universal pattern, compensation trends vary significantly by country. In Singapore specifically, Product Design and UX Research emerge as the second-highest-paid design disciplines after leadership roles, which may explain the growing attraction to these specialisations among designers. Interestingly, visually-oriented disciplines in Singapore – including motion design, marketing / graphic design, and UI design – cluster around similar compensation levels. However, these findings should be interpreted with caution due to the current limitations in our dataset. The sample sizes vary considerably, ranging from single responses in some categories to 369 in others, suggesting that additional data collection would be valuable to strengthen and validate these preliminary insights.
         </p>
         <div class="filter-container">
             <label for="fieldCountrySelect">Select Country:</label>
