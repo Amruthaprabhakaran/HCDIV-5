@@ -37,9 +37,9 @@
             padding: 12px 0;
         }
         h2 {
-            color: #000000;
-            font-size: 1.2rem;
-            margin-top: 10px;
+            color: #5c258d;
+            font-size: 1.8rem;
+            margin-top: 30px;
         }
         h3 {
             font-size: 1.4rem;
@@ -51,6 +51,11 @@
             margin-top: 20px;
             margin-bottom: 10px;
             color: #333;
+        }
+        h5 {
+            color: #000000;
+            font-size: 1.2rem;
+            margin-top: 10px;
         }
         p {
             margin-bottom: 20px;
@@ -144,7 +149,7 @@
             <h1>Charting Design: A Data-Driven Snapshot of Asia's Design Industry in 2024</h1>
         </div>
         <div class="subheader">
-            <h2>by Amrutha Prabhakaran (1009609) & Karis Ong Xin Le (1009701)</h2>
+            <h5>by Amrutha Prabhakaran (1009609) & Karis Ong Xin Le (1009701)</h5>
         </div>
         <!-- Image -->
         <div class="image-section">
@@ -168,7 +173,7 @@
                 </p>
                 <p><strong>Data Source:</strong> <a href="https://docs.google.com/spreadsheets/d/17BpODawpHg6jD_gAIq3H6QM90n1F9tfzdo7LfRy1P8E/edit?gid=0#gid=0" target="_blank">Google Sheet</a></p>
                 <p>
-                    As the survey is still collecting responses, we will we will focus on data collected from 1 October - 10 December 2024 only. 
+                    As the survey is still collecting responses, we will focus on data collected from 1 October - 10 December 2024 only.
                 </p>       
             </div>
         </div>
@@ -189,7 +194,7 @@
             </p>
         </div>
         
-        <!-- A) Distribution by Country -->
+        <!-- A) Distribution by Country and Gender -->
         <h4>A) Distribution by Country and Gender</h4>
         <p class="chart-description">
             The survey data revealed Indonesia as the primary source of responses, with the largest participant pool among all countries surveyed. While male respondents dominated the overall sample, both Singapore and Thailand deviated from this pattern, showing higher proportions of female participants in their respective regions.
@@ -222,7 +227,7 @@
         <!-- A) Compensation patterns by country and gender -->
         <h4>A) Compensation patterns by country and gender</h4>
         <p>
-            The box plot below provides a view of annual total compensation (in SGD)...
+            The box plot below provides a view of annual total compensation (in SGD) across different countries, segmented by gender. This visualization helps identify disparities and trends in earnings based on both location and gender, offering insights into where pay gaps may exist or where compensation is more equitable.
         </p>
         <div class="filter-container">
             <label for="genderDropdown">Gender:</label>
@@ -237,7 +242,7 @@
         <!-- B) Impact of design education on compensation -->
         <h4>B) Impact of design education on compensation</h4>
         <p>
-            The box plot below compares annual total compensation (in SGD)...
+            The box plot below compares annual total compensation (in SGD) between designers with formal/informal design-related education and those without, segmented by country. This analysis sheds light on how educational background influences earning potential within the design industry across different regions.
         </p>
         <div class="filter-container">
             <label for="countryDropdownEducation">Country:</label>
@@ -248,7 +253,7 @@
         <!-- C) Impact of Education and Experience on Annual Salary(SGD) -->
         <h4>C) Impact of Education and Experience on Annual Salary(SGD)</h4>
         <p class="chart-description">
-            This Sankey chart visualizes the flow...
+            This Sankey chart visualizes the flow from education to experience and finally to annual salary in SGD for designers within a selected country. It highlights the pathways that designers take from their educational background through their years of experience to their current compensation levels.
         </p>
         <div class="filter-container">
             <label for="sankeyCountrySelect">Country:</label>
@@ -259,7 +264,7 @@
         <!-- D) Company size vs. Top 5 industries -->
         <h4>D) Company size vs. Top 5 industries</h4>
         <p class="chart-description">
-            This heatmap shows the median annual total compensation...
+            This heatmap shows the median annual total compensation (in SGD) for designers across the top five industries and various company sizes within a selected country. It helps in understanding how industry and company scale impact salary levels.
         </p>
         <div class="filter-container">
             <label for="heatmapCountrySelect">Country:</label>
@@ -332,29 +337,29 @@
             allCountriesForEducation = filteredCountriesEdu;
             populateCountryEducationDropdown(allCountriesForEducation);
             if (allCountriesForEducation.includes("Singapore")) {
-                countryDropdownEducation.value = "Singapore";
+                document.getElementById('countryDropdownEducation').value = "Singapore";
             } else if (allCountriesForEducation.length > 0) {
-                countryDropdownEducation.value = allCountriesForEducation[0];
+                document.getElementById('countryDropdownEducation').value = allCountriesForEducation[0];
             }
             renderBoxplotEducationChart(allData);
 
             const uniqueCountriesSankey = Array.from(new Set(allData.map(row => (row["Country you live and work in"]||"").trim()).filter(x=>x!==""))).sort();
             populateSankeyCountryDropdown(uniqueCountriesSankey);
             if (uniqueCountriesSankey.includes("Singapore")) {
-                sankeyCountrySelect.value = "Singapore";
+                document.getElementById('sankeyCountrySelect').value = "Singapore";
             } else if (uniqueCountriesSankey.length > 0) {
-                sankeyCountrySelect.value = uniqueCountriesSankey[0];
+                document.getElementById('sankeyCountrySelect').value = uniqueCountriesSankey[0];
             }
-            renderSankeyChart(allData, sankeyCountrySelect.value);
+            renderSankeyChart(allData, document.getElementById('sankeyCountrySelect').value);
 
             const uniqueCountriesHeatmap = Array.from(new Set(allData.map(row => (row["Country you live and work in"]||"").trim()).filter(x=>x!==""))).sort();
             populateHeatmapCountryDropdown(uniqueCountriesHeatmap);
             if (uniqueCountriesHeatmap.includes("Singapore")) {
-                heatmapCountrySelect.value = "Singapore";
+                document.getElementById('heatmapCountrySelect').value = "Singapore";
             } else if (uniqueCountriesHeatmap.length > 0) {
-                heatmapCountrySelect.value = uniqueCountriesHeatmap[0];
+                document.getElementById('heatmapCountrySelect').value = uniqueCountriesHeatmap[0];
             }
-            renderHeatmap(allData, heatmapCountrySelect.value);
+            renderHeatmap(allData, document.getElementById('heatmapCountrySelect').value);
 
             const uniqueCountriesField = Array.from(new Set(allData.map(row => (row["Country you live and work in"]||"").trim()).filter(x=>x!==""))).sort();
             populateFieldCountryDropdown(uniqueCountriesField);
@@ -365,8 +370,25 @@
             }
             renderFieldChart(allData, fieldMapping, document.getElementById('fieldCountrySelect').value);
 
+            // Add event listeners to dropdowns
             document.getElementById('fieldCountrySelect').addEventListener('change', function(e) {
                 renderFieldChart(allData, fieldMapping, e.target.value);
+            });
+
+            document.getElementById('genderDropdown').addEventListener('change', function(e) {
+                renderBoxplotChart(); 
+            });
+
+            document.getElementById('countryDropdownEducation').addEventListener('change', function(e) {
+                renderBoxplotEducationChart(allData);
+            });
+
+            document.getElementById('sankeyCountrySelect').addEventListener('change', function(e) {
+                renderSankeyChart(allData, e.target.value);
+            });
+
+            document.getElementById('heatmapCountrySelect').addEventListener('change', function(e) {
+                renderHeatmap(allData, e.target.value);
             });
         }
 
@@ -586,7 +608,7 @@
         function renderBoxplotChart() {
             if (!allData || allData.length === 0) return;
 
-            const selectedGender = genderDropdown.value;
+            const selectedGender = document.getElementById('genderDropdown').value;
             const filteredData = allData.filter(row => {
                 if (selectedGender === 'All') return true;
                 return row['Gender'] === selectedGender;
@@ -769,7 +791,7 @@
         function renderBoxplotEducationChart(data) {
             if (!allData || allData.length === 0) return;
             data = data || allData;
-            const selectedCountry = countryDropdownEducation.value;
+            const selectedCountry = document.getElementById('countryDropdownEducation').value;
 
             const filteredData = data.filter(row => {
                 const comp = parseFloat((row['Annual Total Comp (SGD)'] || '').replace(/,/g, ''));
@@ -850,6 +872,7 @@
         }
 
         function populateCountryEducationDropdown(countries) {
+            const countryDropdownEducation = document.getElementById('countryDropdownEducation');
             while (countryDropdownEducation.options.length > 0) {
                 countryDropdownEducation.remove(0);
             }
@@ -874,6 +897,7 @@
         }
 
         function populateSankeyCountryDropdown(countries) {
+            const sankeyCountrySelect = document.getElementById('sankeyCountrySelect');
             while (sankeyCountrySelect.options.length > 0) {
                 sankeyCountrySelect.remove(0);
             }
@@ -1025,6 +1049,7 @@
         }
 
         function populateHeatmapCountryDropdown(countries) {
+            const heatmapCountrySelect = document.getElementById('heatmapCountrySelect');
             while (heatmapCountrySelect.options.length > 0) {
                 heatmapCountrySelect.remove(0);
             }
@@ -1232,15 +1257,6 @@
             const fieldChart = echarts.init(document.getElementById('fieldChart'));
 
             fieldChart.setOption({
-                // title: {
-                //     text: `Average Compensation by Primary Field in ${selectedCountry}`,
-                //     left: 'center',
-                //     textStyle: {
-                //         fontSize: 16,
-                //         fontWeight: 'bold',
-                //         color: '#333'
-                //     }
-                // },
                 tooltip: {
                     trigger: 'axis',
                     formatter: function(params) {
@@ -1295,6 +1311,7 @@
                 }]
             });
         }
+
     </script>
 </body>
 </html>
