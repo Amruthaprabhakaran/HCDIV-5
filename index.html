@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Asia Design Industry 2024</title>
     <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script> <!-- D3 for boxplot & calculations -->
+    <!-- D3 Cloud for word cloud layout -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-cloud/1.2.5/d3.layout.cloud.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -32,6 +35,21 @@
         h2 {
             color: #5c258d;
             font-size: 1.8rem;
+            margin-top: 30px;
+        }
+        h3 {
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        h4 {
+            font-size: 1.2rem;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        p {
+            margin-bottom: 20px;
         }
         .image-section img {
             max-width: 100%;
@@ -51,9 +69,6 @@
             margin: 10px;
             flex: 1;
             min-width: 300px;
-        }
-        p {
-            margin: 0 0 10px;
         }
         .button-container {
             text-align: center;
@@ -79,10 +94,42 @@
             color: #333;
             line-height: 1.6;
         }
-        #chart {
+        #chart, #chartAge, #chart-boxplot, #chart-boxplot-education, #chart-sankey, #chart-heatmap, #fieldChart {
             width: 100%;
             height: 500px;
             margin-top: 20px;
+        }
+        #chart-boxplot, #chart-boxplot-education {
+            height: 600px;
+        }
+        #jobTitleCloud {
+            width: 100%;
+            height: 600px;
+            margin-top: 20px;
+            background-color: #f0f0f0;
+            position: relative;
+        }
+        .filter-container {
+            margin: 10px 0;
+        }
+        .filter-container label {
+            margin-right: 10px;
+            font-size: 1rem;
+            color: #333;
+        }
+        .filter-container select {
+            padding: 5px;
+            font-size: 1rem;
+        }
+        .insights {
+            background: #fff;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .insights h3 {
+            margin-top: 0;
         }
     </style>
 </head>
@@ -94,9 +141,9 @@
         </div>
         <!-- Image -->
         <div class="image-section">
-            <img src="header.jpg" alt="Design Industry Visuals">
+            <img src="header.jpeg" alt="Design Industry Visuals">
         </div>
-        <!-- Content Sections -->
+        <!-- Introduction and Objective -->
         <div class="content">
             <div class="intro">
                 <h2>Introduction</h2>
@@ -115,81 +162,1130 @@
                 <p><strong>Data Source:</strong> <a href="https://docs.google.com/spreadsheets/d/17BpODawpHg6jD_gAIq3H6QM90n1F9tfzdo7LfRy1P8E/edit?gid=0#gid=0" target="_blank">Google Sheet</a></p>
             </div>
         </div>
+        
         <!-- Button -->
         <div class="button-container">
             <a href="https://tally.so/r/3EDeGX" target="_blank">Contribute to the survey</a>
         </div>
+        
         <!-- Understanding the Data Section -->
         <h2>Understanding the Data</h2>
-        <h3>Demography</h3>
-        <!-- Chart Description -->
-        <div class="chart-description" id="chart-description">
-            Loading chart description...
+        
+        <!-- Insights Block -->
+        <div class="insights">
+            <h3>Overview:</h3>
+            <p>
+                The data shows a significant concentration of designers in certain countries and within specific age groups. For instance, some countries clearly emerge as having a higher proportion of design professionals, while certain age brackets dominate the design landscape, possibly reflecting recent shifts in career trajectories.
+            </p>
+            <p>
+                By comparing countries and ages, we can observe patterns such as a younger demographic leaning into design roles in tech hubs, while more established markets may show a balanced spread across different ages. This information can guide emerging designers towards regions and age cohorts that align with their career expectations.
+            </p>
         </div>
-        <!-- Chart -->
+        
+        <!-- A) Distribution by Country -->
+        <h4>A) Distribution by Country</h4>
+        <p class="chart-description">
+            This chart illustrates how the design workforce is distributed across different countries...
+        </p>
         <div id="chart"></div>
+        
+        <!-- B) Distribution by Age -->
+        <h4>B) Distribution by Age</h4>
+        <p class="chart-description">
+            This chart shows how the design talent pool is distributed across different age ranges...
+        </p>
+        <div class="filter-container">
+            <label for="countrySelect">Country:</label>
+            <select id="countrySelect">
+                <option value="All">All</option>
+            </select>
+        </div>
+        <div id="chartAge"></div>
+
+        <!-- C) Job Titles Word Cloud -->
+        <h4>C) Job Titles Word Cloud</h4>
+        <p class="chart-description">
+            This word cloud visualizes the frequency of various job titles...
+        </p>
+        <div id="jobTitleCloud"></div>
+
+        <!-- Key Insights Heading -->
+        <h2>Key Insights</h2>
+        
+        <!-- A) Compensation patterns by country and gender -->
+        <h4>A) Compensation patterns by country and gender</h4>
+        <p>
+            The box plot below provides a view of annual total compensation (in SGD)...
+        </p>
+        <div class="filter-container">
+            <label for="genderDropdown">Gender:</label>
+            <select id="genderDropdown">
+                <option value="All">All</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+            </select>
+        </div>
+        <div id="chart-boxplot"></div>
+
+        <!-- B) Impact of design education on compensation -->
+        <h4>B) Impact of design education on compensation</h4>
+        <p>
+            The box plot below compares annual total compensation (in SGD)...
+        </p>
+        <div class="filter-container">
+            <label for="countryDropdownEducation">Country:</label>
+            <select id="countryDropdownEducation"></select>
+        </div>
+        <div id="chart-boxplot-education"></div>
+        
+        <!-- C) Impact of Education and Experience on Annual Salary(SGD) -->
+        <h4>C) Impact of Education and Experience on Annual Salary(SGD)</h4>
+        <p class="chart-description">
+            This Sankey chart visualizes the flow...
+        </p>
+        <div class="filter-container">
+            <label for="sankeyCountrySelect">Country:</label>
+            <select id="sankeyCountrySelect"></select>
+        </div>
+        <div id="chart-sankey"></div>
+
+        <!-- D) Company size vs. Top 5 industries -->
+        <h4>D) Company size vs. Top 5 industries</h4>
+        <p class="chart-description">
+            This heatmap shows the median annual total compensation...
+        </p>
+        <div class="filter-container">
+            <label for="heatmapCountrySelect">Country:</label>
+            <select id="heatmapCountrySelect"></select>
+        </div>
+        <div id="chart-heatmap"></div>
+
+        <!-- E) Compensation by Primary Field -->
+        <h4>E) Compensation by Primary Field</h4>
+        <p class="chart-description">
+            This chart shows the average annual compensation by primary field of work for the selected country.
+        </p>
+        <div class="filter-container">
+            <label for="fieldCountrySelect">Select Country:</label>
+            <select id="fieldCountrySelect" style="padding: 5px; border-radius: 4px; border: 1px solid #ccc;"></select>
+        </div>
+        <div id="fieldChart" style="height: 600px;"></div>
+
     </div>
 
     <script>
-        // Viridis color palette
-        const viridisColors = ["#440154", "#777BE0", "#FDE725","#089BC5", "#00CA91", "#7AD151" ];
+        const viridisColors = ["#440154", "#777BE0", "#00CA91","#FDE725","#089BC5","#7AD151" ];
 
-        // Load CSV data
+        let ageFilteredData = [];
+        let ageGenderMap = {};
+        let sortedAges = [];
+        let gendersAge = [];
+        let maxTotalAge = 0;
+        let availableCountries = [];
+        let allData = []; 
+        let allCountriesForEducation = [];
+        let boxplotChartEducation = null; 
+        let boxplotChart = null; 
+        let sankeyChart = null; 
+        let heatmapChart = null; 
+        let fieldMapping = null; 
+
+        const INDUSTRIES = [
+            "Technology, media & telecommunications", 
+            "Financial services", 
+            "Consumer products",
+            "Retail, wholesale & distribution",
+            "Education"
+        ];
+        const COMPANY_SIZES = ["51 - 200", "201 - 1000", "1001 - 10,000", "10,001 and above"];
+
         Papa.parse("dataset_1.csv", {
             download: true,
             header: true,
             complete: function(results) {
                 const data = results.data;
-                processAndRenderChart(data);
+                allData = data.filter(row => row["Exclude"] !== "Y");
+                fetch('mapping.json')
+                    .then(response => response.json())
+                    .then(mapping => {
+                        fieldMapping = mapping;
+                        initializeAllCharts();
+                    });
             }
         });
 
-        function processAndRenderChart(data) {
-            // Filter valid data
-            const filteredData = data.filter(row => row["Exclude"] !== "Y" && row["Gender"] && row["Gender"] !== "Prefer not to respond" && row["Country you live and work in"]);
+        function initializeAllCharts() {
+            processAndRenderChart(allData);
+            processAndRenderAgeChart(allData);
+            renderBoxplotChart();
+            renderWordCloud(allData);
 
-            // Group by country and gender
+            const uniqueCountriesEdu = new Set(allData.map(row => (row["Country you live and work in"] || '').trim()));
+            const filteredCountriesEdu = Array.from(uniqueCountriesEdu).filter(cty => cty !== '').sort();
+            allCountriesForEducation = filteredCountriesEdu;
+            populateCountryEducationDropdown(allCountriesForEducation);
+            if (allCountriesForEducation.includes("Singapore")) {
+                countryDropdownEducation.value = "Singapore";
+            } else if (allCountriesForEducation.length > 0) {
+                countryDropdownEducation.value = allCountriesForEducation[0];
+            }
+            renderBoxplotEducationChart(allData);
+
+            const uniqueCountriesSankey = Array.from(new Set(allData.map(row => (row["Country you live and work in"]||"").trim()).filter(x=>x!==""))).sort();
+            populateSankeyCountryDropdown(uniqueCountriesSankey);
+            if (uniqueCountriesSankey.includes("Singapore")) {
+                sankeyCountrySelect.value = "Singapore";
+            } else if (uniqueCountriesSankey.length > 0) {
+                sankeyCountrySelect.value = uniqueCountriesSankey[0];
+            }
+            renderSankeyChart(allData, sankeyCountrySelect.value);
+
+            const uniqueCountriesHeatmap = Array.from(new Set(allData.map(row => (row["Country you live and work in"]||"").trim()).filter(x=>x!==""))).sort();
+            populateHeatmapCountryDropdown(uniqueCountriesHeatmap);
+            if (uniqueCountriesHeatmap.includes("Singapore")) {
+                heatmapCountrySelect.value = "Singapore";
+            } else if (uniqueCountriesHeatmap.length > 0) {
+                heatmapCountrySelect.value = uniqueCountriesHeatmap[0];
+            }
+            renderHeatmap(allData, heatmapCountrySelect.value);
+
+            const uniqueCountriesField = Array.from(new Set(allData.map(row => (row["Country you live and work in"]||"").trim()).filter(x=>x!==""))).sort();
+            populateFieldCountryDropdown(uniqueCountriesField);
+            if (uniqueCountriesField.includes("Singapore")) {
+                document.getElementById('fieldCountrySelect').value = "Singapore";
+            } else if (uniqueCountriesField.length > 0) {
+                document.getElementById('fieldCountrySelect').value = uniqueCountriesField[0];
+            }
+            renderFieldChart(allData, fieldMapping, document.getElementById('fieldCountrySelect').value);
+
+            document.getElementById('fieldCountrySelect').addEventListener('change', function(e) {
+                renderFieldChart(allData, fieldMapping, e.target.value);
+            });
+        }
+
+        function processAndRenderChart(data) {
+            const filteredData = data.filter(row => {
+                const gender = (row["Gender"] || '').trim();
+                const country = (row["Country you live and work in"] || '').trim();
+                return gender && gender !== "Prefer not to respond" && country;
+            });
+
             const countryGenderMap = {};
             filteredData.forEach(row => {
-                const country = row["Country you live and work in"].trim();
-                const gender = row["Gender"].trim();
+                const country = (row["Country you live and work in"] || '').trim();
+                const gender = (row["Gender"] || '').trim();
                 if (!countryGenderMap[country]) countryGenderMap[country] = {};
                 countryGenderMap[country][gender] = (countryGenderMap[country][gender] || 0) + 1;
             });
 
-            // Sort countries and build series
-            const sortedCountries = Object.entries(countryGenderMap)
+            const countryTotals = Object.entries(countryGenderMap)
                 .map(([country, genders]) => ({
                     country,
                     total: Object.values(genders).reduce((a, b) => a + b, 0)
                 }))
-                .sort((a, b) => a.total - b.total)
-                .map(item => item.country);
+                .sort((a, b) => b.total - a.total);
 
+            const sortedCountries = countryTotals.map(item => item.country);
+            const maxTotal = countryTotals.length > 0 ? countryTotals[0].total : 0;
             const genders = [...new Set(filteredData.map(row => row["Gender"]))];
+
             const seriesData = genders.map((gender, index) => ({
                 name: gender,
                 type: 'bar',
                 stack: 'total',
                 itemStyle: { color: viridisColors[index % viridisColors.length] },
-                data: sortedCountries.map(country => countryGenderMap[country][gender] || null)
+                label: {
+                    show: true,
+                    position: 'inside',
+                    color: '#fff',
+                    formatter: params => (params.value > 5 ? params.value : '')
+                },
+                data: sortedCountries.map(country => countryGenderMap[country][gender] || 0)
             }));
 
-            // Dynamic chart description
-            const maxCountry = sortedCountries[sortedCountries.length - 1];
-            const minCountry = sortedCountries[0];
-            document.getElementById("chart-description").innerHTML =
-                `The chart shows that <strong>${maxCountry}</strong> has the highest representation, while <strong>${minCountry}</strong> has the lowest representation.`;
+            const totalLabels = {
+                name: 'Total',
+                type: 'bar',
+                stack: 'total',
+                itemStyle: { color: 'transparent' },
+                emphasis: { disabled: true },
+                label: {
+                    show: true,
+                    color: '#000',
+                    fontWeight: 'bold',
+                    position: function(pos, params, dom, rect, size) {
+                        const x = rect.x + rect.width + 10;
+                        const y = rect.y + rect.height / 2;
+                        return [x, y];
+                    },
+                    align: 'left',
+                    verticalAlign: 'middle',
+                    formatter: params => {
+                        const country = params.name;
+                        const total = Object.values(countryGenderMap[country]).reduce((a, b) => a + b, 0);
+                        return total;
+                    }
+                },
+                data: sortedCountries.map(country =>
+                    Object.values(countryGenderMap[country]).reduce((a, b) => a + b, 0)
+                )
+            };
 
-            // Render chart
             const chart = echarts.init(document.getElementById("chart"));
             chart.setOption({
                 tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
                 legend: { data: genders },
-                grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
-                xAxis: { show: false },
-                yAxis: { type: 'category', data: sortedCountries },
-                series: seriesData
+                backgroundColor: '#f0f0f0',
+                grid: { left: '3%', right: '100', bottom: '3%', containLabel: true },
+                xAxis: {
+                    type: 'value',
+                    splitLine: { show: false },
+                    max: maxTotal
+                },
+                yAxis: {
+                    type: 'category',
+                    data: sortedCountries,
+                    inverse: true
+                },
+                series: [...seriesData, totalLabels]
+            });
+        }
+
+        function processAndRenderAgeChart(data) {
+            ageFilteredData = data.filter(row => {
+                const gender = (row["Gender"] || '').trim();
+                const age = (row["Your age"] || '').trim();
+                const country = (row["Country you live and work in"] || '').trim();
+                return gender && gender !== "Prefer not to respond" 
+                    && age && age !== "Prefer not to respond"
+                    && country;
+            });
+
+            const uniqueCountries = new Set(ageFilteredData.map(row => (row["Country you live and work in"] || '').trim()));
+            const filteredCountries = Array.from(uniqueCountries).filter(cty => cty.toLowerCase() !== "all");
+
+            availableCountries = ["All", ...filteredCountries.sort()];
+            populateCountryDropdown(availableCountries);
+
+            updateAgeChart("All");
+        }
+
+        function updateAgeChart(selectedCountry) {
+            ageGenderMap = {};
+            
+            const filteredByCountry = selectedCountry === "All"
+                ? ageFilteredData
+                : ageFilteredData.filter(row => (row["Country you live and work in"] || '').trim() === selectedCountry);
+            
+            filteredByCountry.forEach(row => {
+                const age = (row["Your age"] || '').trim();
+                const gender = (row["Gender"] || '').trim();
+                if (!ageGenderMap[age]) ageGenderMap[age] = {};
+                ageGenderMap[age][gender] = (ageGenderMap[age][gender] || 0) + 1;
+            });
+
+            const ageTotals = Object.entries(ageGenderMap)
+                .map(([age, genders]) => ({
+                    age,
+                    total: Object.values(genders).reduce((a, b) => a + b, 0)
+                }))
+                .sort((a, b) => b.total - a.total);
+
+            sortedAges = ageTotals.map(item => item.age);
+            maxTotalAge = ageTotals.length > 0 ? ageTotals[0].total : 0;
+            gendersAge = [...new Set(filteredByCountry.map(row => row["Gender"]))];
+
+            const seriesDataAge = gendersAge.map((gender, index) => ({
+                name: gender,
+                type: 'bar',
+                stack: 'total',
+                itemStyle: { color: viridisColors[index % viridisColors.length] },
+                label: {
+                    show: true,
+                    position: 'inside',
+                    color: '#fff',
+                    formatter: params => (params.value > 5 ? params.value : '')
+                },
+                data: sortedAges.map(age => ageGenderMap[age][gender] || 0)
+            }));
+
+            const totalLabelsAge = {
+                name: 'Total',
+                type: 'bar',
+                stack: 'total',
+                itemStyle: { color: 'transparent' },
+                emphasis: { disabled: true },
+                label: {
+                    show: true,
+                    color: '#000',
+                    fontWeight: 'bold',
+                    position: function(pos, params, dom, rect, size) {
+                        const x = rect.x + rect.width + 10;
+                        const y = rect.y + rect.height / 2;
+                        return [x, y];
+                    },
+                    align: 'left',
+                    verticalAlign: 'middle',
+                    formatter: params => {
+                        const age = params.name;
+                        const total = Object.values(ageGenderMap[age]).reduce((a, b) => a + b, 0);
+                        return total;
+                    }
+                },
+                data: sortedAges.map(age =>
+                    Object.values(ageGenderMap[age]).reduce((a, b) => a + b, 0)
+                )
+            };
+
+            const chartAge = echarts.init(document.getElementById("chartAge"));
+            chartAge.setOption({
+                tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+                legend: { data: gendersAge },
+                backgroundColor: '#f0f0f0',
+                grid: { left: '3%', right: '100', bottom: '3%', containLabel: true },
+                xAxis: {
+                    type: 'value',
+                    splitLine: { show: false },
+                    max: maxTotalAge
+                },
+                yAxis: {
+                    type: 'category',
+                    data: sortedAges,
+                    inverse: true
+                },
+                series: [...seriesDataAge, totalLabelsAge]
+            });
+        }
+
+        function populateCountryDropdown(countries) {
+            const select = document.getElementById("countrySelect");
+            while (select.options.length > 1) {
+                select.remove(1);
+            }
+            countries.forEach((cty, index) => {
+                if (index === 0 && cty === "All") return;
+                const option = document.createElement("option");
+                option.value = cty;
+                option.textContent = cty;
+                select.appendChild(option);
+            });
+
+            select.addEventListener("change", (e) => {
+                const selected = e.target.value;
+                updateAgeChart(selected);
+            });
+        }
+
+        function renderBoxplotChart() {
+            if (!allData || allData.length === 0) return;
+
+            const selectedGender = genderDropdown.value;
+            const filteredData = allData.filter(row => {
+                if (selectedGender === 'All') return true;
+                return row['Gender'] === selectedGender;
+            });
+
+            const boxplotData = filteredData
+                .map(row => {
+                    const comp = parseFloat((row['Annual Total Comp (SGD)'] || '').replace(/,/g, ''));
+                    return {
+                        Country: row['Country you live and work in'],
+                        Compensation: !isNaN(comp) ? comp : 0
+                    };
+                })
+                .filter(row => row.Compensation > 0 && row.Country);
+
+            const groupedData = groupByCountry(boxplotData);
+            const { boxplot, outliers } = computeBoxplotAndOutliers(groupedData);
+
+            if (!boxplotChart) {
+                boxplotChart = echarts.init(document.getElementById('chart-boxplot'));
+            }
+
+            const option = {
+                tooltip: {
+                    trigger: 'item',
+                    confine: true,
+                    formatter: function (params) {
+                        const formatter = new Intl.NumberFormat('en-US');
+                        if (params.seriesName === 'boxplot') {
+                            const { min, Q1, median, Q3, max } = params.data;
+                            return `
+                                <b>${params.name}</b><br/>
+                                Min: ${formatter.format(min)}<br/>
+                                Q1: ${formatter.format(Q1)}<br/>
+                                Median: ${formatter.format(median)}<br/>
+                                Q3: ${formatter.format(Q3)}<br/>
+                                Max: ${formatter.format(max)}
+                            `;
+                        } else if (params.seriesName === 'outliers') {
+                            return `
+                                <b>${params.name}</b><br/>
+                                Outlier: ${formatter.format(params.data.Compensation)}
+                            `;
+                        }
+                    }
+                },
+                backgroundColor: '#f0f0f0',
+                xAxis: {
+                    name: 'Compensation (SGD)',
+                    nameLocation: 'middle',
+                    nameGap: 30,
+                    scale: true,
+                    axisLabel: { formatter: '{value}' }
+                },
+                yAxis: { type: 'category' },
+                grid: { bottom: 100 },
+                dataset: [
+                    { id: 'boxplot', source: boxplot },
+                    { id: 'outliers', source: outliers }
+                ],
+                series: [
+                    {
+                        name: 'boxplot',
+                        type: 'boxplot',
+                        datasetId: 'boxplot',
+                        itemStyle: { color: '#440154' },
+                        encode: {
+                            x: ['min', 'Q1', 'median', 'Q3', 'max'],
+                            y: 'Country',
+                            tooltip: ['min', 'Q1', 'median', 'Q3', 'max']
+                        }
+                    },
+                    {
+                        name: 'outliers',
+                        type: 'scatter',
+                        datasetId: 'outliers',
+                        encode: { x: 'Compensation', y: 'Country', tooltip: ['Compensation'] },
+                        itemStyle: { color: '#fde725' },
+                        symbolSize: 8
+                    }
+                ]
+            };
+
+            boxplotChart.setOption(option);
+        }
+
+        function groupByCountry(data) {
+            const groups = {};
+            data.forEach(row => {
+                if (!groups[row.Country]) groups[row.Country] = [];
+                groups[row.Country].push(row.Compensation);
+            });
+            return groups;
+        }
+
+        function computeBoxplotAndOutliers(groupedData) {
+            const boxplot = [];
+            const outliers = [];
+            Object.entries(groupedData).forEach(([country, values]) => {
+                values.sort((a, b) => a - b);
+
+                const Q1 = d3.quantile(values, 0.25);
+                const Q3 = d3.quantile(values, 0.75);
+                const IQR = Q3 - Q1;
+
+                const lowerBound = Q1 - 1.5 * IQR;
+                const upperBound = Q3 + 1.5 * IQR;
+
+                const validValues = values.filter(v => v >= lowerBound && v <= upperBound);
+                const countryOutliers = values.filter(v => v < lowerBound || v > upperBound);
+
+                boxplot.push({
+                    Country: country,
+                    min: d3.min(validValues),
+                    Q1,
+                    median: d3.median(validValues),
+                    Q3,
+                    max: d3.max(validValues)
+                });
+
+                countryOutliers.forEach(outlier => {
+                    outliers.push({ Country: country, Compensation: outlier });
+                });
+            });
+            return { boxplot, outliers };
+        }
+
+        function renderWordCloud(data) {
+            const jobTitlesData = data
+                .map(row => row["JobTItle"])
+                .filter(title => title && title !== "")
+                .map(title => title.trim()); 
+
+            const frequencyMap = {};
+            jobTitlesData.forEach(title => {
+                frequencyMap[title] = (frequencyMap[title] || 0) + 1;
+            });
+
+            const words = Object.entries(frequencyMap).map(([text, size]) => ({ text, size }));
+
+            const width = document.getElementById('jobTitleCloud').clientWidth;
+            const height = 600;
+
+            const maxSize = d3.max(words, d => d.size);
+            const fontScale = d3.scaleLinear()
+                .domain([1, maxSize])
+                .range([10,100]);
+
+            const layout = d3.layout.cloud()
+                .size([width, height])
+                .words(words)
+                .padding(5)
+                .rotate(() => 0)
+                .font("Arial")
+                .fontSize(d => fontScale(d.size)) 
+                .on("end", draw);
+
+            layout.start();
+
+            function draw(words) {
+                const svg = d3.select("#jobTitleCloud").append("svg")
+                    .attr("width", width)
+                    .attr("height", height);
+
+                const g = svg.append("g")
+                    .attr("transform", "translate(" + [width >> 1, height >> 1] + ")");
+
+                g.selectAll("text")
+                    .data(words)
+                    .enter().append("text")
+                    .style("font-family", "Arial")
+                    .style("fill", function(d, i) { return viridisColors[i % viridisColors.length]; })
+                    .attr("text-anchor", "middle")
+                    .style("font-size", d => d.size + "px")
+                    .attr("transform", d => "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")")
+                    .text(d => d.text);
+            }
+        }
+
+        function renderBoxplotEducationChart(data) {
+            if (!allData || allData.length === 0) return;
+            data = data || allData;
+            const selectedCountry = countryDropdownEducation.value;
+
+            const filteredData = data.filter(row => {
+                const comp = parseFloat((row['Annual Total Comp (SGD)'] || '').replace(/,/g, ''));
+                const edu = (row['Did you have design-related education (Formal/informal)?'] || '').trim();
+                const cty = (row['Country you live and work in'] || '').trim();
+                return !isNaN(comp) && comp > 0 && edu && edu !== "" && cty === selectedCountry;
+            });
+
+            const groupedData = groupByEducation(filteredData);
+            const { boxplot, outliers } = computeBoxplotAndOutliers(groupedData);
+
+            if (!boxplotChartEducation) {
+                boxplotChartEducation = echarts.init(document.getElementById('chart-boxplot-education'));
+            }
+
+            const option = {
+                tooltip: {
+                    trigger: 'item',
+                    confine: true,
+                    formatter: function (params) {
+                        const formatter = new Intl.NumberFormat('en-US');
+                        if (params.seriesName === 'boxplot') {
+                            const { min, Q1, median, Q3, max } = params.data;
+                            return `
+                                <b>${params.name}</b><br/>
+                                Min: ${formatter.format(min)}<br/>
+                                Q1: ${formatter.format(Q1)}<br/>
+                                Median: ${formatter.format(median)}<br/>
+                                Q3: ${formatter.format(Q3)}<br/>
+                                Max: ${formatter.format(max)}
+                            `;
+                        } else if (params.seriesName === 'outliers') {
+                            return `
+                                <b>${params.name}</b><br/>
+                                Outlier: ${formatter.format(params.data.Compensation)}
+                            `;
+                        }
+                    }
+                },
+                backgroundColor: '#f0f0f0',
+                xAxis: {
+                    name: 'Compensation (SGD)',
+                    nameLocation: 'middle',
+                    nameGap: 30,
+                    scale: true,
+                    axisLabel: { formatter: '{value}' }
+                },
+                yAxis: { type: 'category' },
+                grid: { bottom: 100 },
+                dataset: [
+                    { id: 'boxplotEdu', source: boxplot },
+                    { id: 'outliersEdu', source: outliers }
+                ],
+                series: [
+                    {
+                        name: 'boxplot',
+                        type: 'boxplot',
+                        datasetId: 'boxplotEdu',
+                        itemStyle: { color: '#440154' },
+                        encode: {
+                            x: ['min', 'Q1', 'median', 'Q3', 'max'],
+                            y: 'Education',
+                            tooltip: ['min', 'Q1', 'median', 'Q3', 'max']
+                        }
+                    },
+                    {
+                        name: 'outliers',
+                        type: 'scatter',
+                        datasetId: 'outliersEdu',
+                        encode: { x: 'Compensation', y: 'Education', tooltip: ['Compensation'] },
+                        itemStyle: { color: '#fde725' },
+                        symbolSize: 8
+                    }
+                ]
+            };
+
+            boxplotChartEducation.setOption(option);
+        }
+
+        function populateCountryEducationDropdown(countries) {
+            while (countryDropdownEducation.options.length > 0) {
+                countryDropdownEducation.remove(0);
+            }
+
+            countries.forEach(cty => {
+                const option = document.createElement("option");
+                option.value = cty;
+                option.textContent = cty;
+                countryDropdownEducation.appendChild(option);
+            });
+        }
+
+        function groupByEducation(data) {
+            const groups = {};
+            data.forEach(row => {
+                const edu = (row['Did you have design-related education (Formal/informal)?'] || '').trim();
+                const comp = parseFloat((row['Annual Total Comp (SGD)'] || '').replace(/,/g, ''));
+                if (!groups[edu]) groups[edu] = [];
+                groups[edu].push(comp);
+            });
+            return groups;
+        }
+
+        function populateSankeyCountryDropdown(countries) {
+            while (sankeyCountrySelect.options.length > 0) {
+                sankeyCountrySelect.remove(0);
+            }
+            countries.forEach(cty => {
+                const option = document.createElement("option");
+                option.value = cty;
+                option.textContent = cty;
+                sankeyCountrySelect.appendChild(option);
+            });
+        }
+
+        function renderSankeyChart(data, selectedCountry) {
+            const filteredData = data.filter(row => row["Exclude"] !== "Y" && (row["Country you live and work in"]||"").trim() === selectedCountry);
+
+            const countryKey = "Country you live and work in";
+            const eduKey = "Highest level of formal education attained";
+            const expKey = "Years of relevant experience_grouped";
+            const salaryKey = "Annual Total Comp Range(SGD)";
+
+            const comboMap = {};
+            filteredData.forEach(row => {
+                const cty = (row[countryKey] || "").trim();
+                const edu = (row[eduKey] || "").trim();
+                const exp = (row[expKey] || "").trim();
+                const sal = (row[salaryKey] || "").trim();
+                if (cty && edu && exp && sal) {
+                    if (!comboMap[cty]) comboMap[cty] = {};
+                    if (!comboMap[cty][edu]) comboMap[cty][edu] = {};
+                    if (!comboMap[cty][edu][exp]) comboMap[cty][edu][exp] = {};
+                    comboMap[cty][edu][exp][sal] = (comboMap[cty][edu][exp][sal] || 0) + 1;
+                }
+            });
+
+            const countries = new Set();
+            const educations = new Set();
+            const experiences = new Set();
+            const salaries = new Set();
+
+            for (const cty in comboMap) {
+                countries.add(cty);
+                for (const edu in comboMap[cty]) {
+                    educations.add(edu);
+                    for (const exp in comboMap[cty][edu]) {
+                        experiences.add(exp);
+                        for (const sal in comboMap[cty][edu][exp]) {
+                            salaries.add(sal);
+                        }
+                    }
+                }
+            }
+
+            const countryArr = Array.from(countries);
+            const eduArr = Array.from(educations);
+            const expArr = Array.from(experiences);
+            const salArr = Array.from(salaries);
+
+            const nodes = [];
+            function addNodes(arr, colorIndex) {
+                arr.forEach(a => nodes.push({ name: a, itemStyle: { color: viridisColors[colorIndex] } }));
+            }
+            addNodes(countryArr, 0);
+            addNodes(eduArr, 1);
+            addNodes(expArr, 2);
+            addNodes(salArr, 3);
+
+            const links = [];
+
+            // Country -> Education
+            for (const cty in comboMap) {
+                for (const edu in comboMap[cty]) {
+                    let totalCount = 0;
+                    for (const exp in comboMap[cty][edu]) {
+                        for (const sal in comboMap[cty][edu][exp]) {
+                            totalCount += comboMap[cty][edu][exp][sal];
+                        }
+                    }
+                    if (totalCount > 0) {
+                        links.push({ source: cty, target: edu, value: totalCount });
+                    }
+                }
+            }
+
+            // Education -> Experience
+            for (const cty in comboMap) {
+                for (const edu in comboMap[cty]) {
+                    for (const exp in comboMap[cty][edu]) {
+                        let totalCount = 0;
+                        for (const sal in comboMap[cty][edu][exp]) {
+                            totalCount += comboMap[cty][edu][exp][sal];
+                        }
+                        if (totalCount > 0) {
+                            links.push({ source: edu, target: exp, value: totalCount });
+                        }
+                    }
+                }
+            }
+
+            // Experience -> Salary
+            for (const cty in comboMap) {
+                for (const edu in comboMap[cty]) {
+                    for (const exp in comboMap[cty][edu]) {
+                        for (const sal in comboMap[cty][edu][exp]) {
+                            const val = comboMap[cty][edu][exp][sal];
+                            if (val > 0) {
+                                links.push({ source: exp, target: sal, value: val });
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (!sankeyChart) {
+                sankeyChart = echarts.init(document.getElementById('chart-sankey'));
+            }
+
+            const option = {
+                tooltip: {
+                    trigger: 'item',
+                    triggerOn: 'mousemove'
+                },
+                backgroundColor: '#f0f0f0',
+                series: [
+                    {
+                        type: 'sankey',
+                        emphasis: {
+                            focus: 'adjacency'
+                        },
+                        nodeAlign: 'left',
+                        data: nodes,
+                        links: links,
+                        lineStyle: {
+                            color: 'source',
+                            curveness: 0.5
+                        },
+                        itemStyle: {
+                            borderWidth: 1,
+                            borderColor: '#aaa'
+                        },
+                        label: {
+                            color: '#333',
+                            fontSize: 12,
+                            overflow: 'truncate'
+                        }
+                    }
+                ]
+            };
+
+            sankeyChart.setOption(option);
+        }
+
+        function populateHeatmapCountryDropdown(countries) {
+            while (heatmapCountrySelect.options.length > 0) {
+                heatmapCountrySelect.remove(0);
+            }
+            countries.forEach(cty => {
+                const option = document.createElement("option");
+                option.value = cty;
+                option.textContent = cty;
+                heatmapCountrySelect.appendChild(option);
+            });
+        }
+
+        function renderHeatmap(data, selectedCountry) {
+            if (!data || data.length === 0) return;
+
+            const filtered = data.filter(row => 
+                (row["Exclude"] !== "Y") &&
+                (row["Country you live and work in"] || "").trim() === selectedCountry &&
+                INDUSTRIES.includes((row["Industry your company is in"]||"").trim()) &&
+                COMPANY_SIZES.includes((row["Company size"]||"").trim())
+            );
+
+            const compMap = {};
+            INDUSTRIES.forEach(ind => { compMap[ind] = {}; COMPANY_SIZES.forEach(sz => compMap[ind][sz] = []); });
+
+            filtered.forEach(row => {
+                const ind = (row["Industry your company is in"]||"").trim();
+                const sz = (row["Company size"]||"").trim();
+                const comp = parseFloat((row["Annual Total Comp (SGD)"]||"").replace(/,/g,''));
+                if (ind && sz && !isNaN(comp)) {
+                    compMap[ind][sz].push(comp);
+                }
+            });
+
+            function median(arr) {
+                if (arr.length === 0) return null;
+                arr.sort((a,b) => a-b);
+                const mid = Math.floor(arr.length/2);
+                if (arr.length % 2 === 1) {
+                    return arr[mid];
+                } else {
+                    return (arr[mid-1] + arr[mid])/2;
+                }
+            }
+
+            const heatmapData = [];
+            let minVal = Infinity, maxVal = -Infinity;
+
+            INDUSTRIES.forEach((ind, i) => {
+                COMPANY_SIZES.forEach((sz, j) => {
+                    let m = median(compMap[ind][sz]);
+                    if (m === null) {
+                        m = -1; 
+                    } else {
+                        minVal = Math.min(minVal, m);
+                        maxVal = Math.max(maxVal, m);
+                    }
+                    heatmapData.push([j, i, m]);
+                });
+            });
+
+            if (!isFinite(minVal)) {
+                minVal = 0;
+                maxVal = 0;
+            } else {
+                if (minVal < 0) minVal = 0;
+            }
+
+            if (!heatmapChart) {
+                heatmapChart = echarts.init(document.getElementById('chart-heatmap'));
+            }
+
+            const option = {
+                tooltip: {
+                    position: 'top',
+                    formatter: function(params) {
+                        const val = params.value[2];
+                        if (val === -1) {
+                            return `${INDUSTRIES[params.value[1]]}<br/>${COMPANY_SIZES[params.value[0]]}: No data`;
+                        } else {
+                            return `${INDUSTRIES[params.value[1]]}<br/>${COMPANY_SIZES[params.value[0]]}: $${val.toLocaleString()}`;
+                        }
+                    }
+                },
+                backgroundColor: '#f0f0f0',
+                grid: {
+                    height: '50%',
+                    top: '10%',
+                    left: '300' 
+                },
+                xAxis: {
+                    type: 'category',
+                    data: COMPANY_SIZES,
+                    splitArea: {
+                        show: true
+                    },
+                    axisLabel: {
+                        color: '#333'
+                    }
+                },
+                yAxis: {
+                    type: 'category',
+                    data: INDUSTRIES,
+                    splitArea: {
+                        show: true
+                    },
+                    axisLabel: {
+                        color: '#333',
+                        margin: 30
+                    }
+                },
+                visualMap: {
+                    min: Math.min(0, minVal), 
+                    max: maxVal,
+                    calculable: true,
+                    orient: 'horizontal',
+                    left: 'center',
+                    bottom: '15%',
+                    inRange: {
+                        color: viridisColors
+                    },
+                    outOfRange: {
+                        color: '#ccc'
+                    },
+                    textStyle: {
+                        color: '#333'
+                    }
+                },
+                series: [
+                    {
+                        name: 'Median Compensation',
+                        type: 'heatmap',
+                        data: heatmapData,
+                        label: {
+                            show: true,
+                            color: '#000',
+                            formatter: function(params) {
+                                const val = params.value[2];
+                                if (val === -1) {
+                                    return '';
+                                } else {
+                                    return '$' + val.toLocaleString();
+                                }
+                            }
+                        },
+                        emphasis: {
+                            itemStyle: {
+                                shadowBlur: 10,
+                                shadowColor: 'rgba(0, 0, 0, 0.5)'
+                            }
+                        }
+                    }
+                ]
+            };
+
+            heatmapChart.setOption(option);
+        }
+
+        function populateFieldCountryDropdown(countries) {
+            const select = document.getElementById('fieldCountrySelect');
+            while (select.options.length > 0) {
+                select.remove(0);
+            }
+            countries.forEach(cty => {
+                const option = document.createElement("option");
+                option.value = cty;
+                option.textContent = cty;
+                select.appendChild(option);
+            });
+        }
+
+        function renderFieldChart(data, mapping, selectedCountry) {
+            const fieldData = {};
+
+            data.filter(row => (row["Country you live and work in"]||"").trim() === selectedCountry)
+                .forEach(row => {
+                    const rawField = row["Primary field of work"];
+                    const comp = parseFloat((row["Annual Total Comp (SGD)"]||"").replace(/,/g, ''));
+                    if (rawField && !isNaN(comp) && mapping[rawField]) {
+                        const mappedField = mapping[rawField];
+                        if (!fieldData[mappedField]) {
+                            fieldData[mappedField] = [];
+                        }
+                        fieldData[mappedField].push(comp);
+                    }
+                });
+
+            const fields = [];
+            const averages = [];
+            const counts = [];
+
+            for (let field in fieldData) {
+                if (fieldData[field].length > 0) {
+                    fields.push(field);
+                    const avg = Math.round(fieldData[field].reduce((a, b) => a + b, 0) / fieldData[field].length);
+                    averages.push(avg);
+                    counts.push(fieldData[field].length);
+                }
+            }
+
+            const indices = averages.map((_, i) => i).sort((a, b) => averages[b] - averages[a]);
+            const sortedFields = indices.map(i => fields[i]);
+            const sortedAverages = indices.map(i => averages[i]);
+            const sortedCounts = indices.map(i => counts[i]);
+
+            const fieldChart = echarts.init(document.getElementById('fieldChart'));
+
+            fieldChart.setOption({
+                // title: {
+                //     text: `Average Compensation by Primary Field in ${selectedCountry}`,
+                //     left: 'center',
+                //     textStyle: {
+                //         fontSize: 16,
+                //         fontWeight: 'bold',
+                //         color: '#333'
+                //     }
+                // },
+                tooltip: {
+                    trigger: 'axis',
+                    formatter: function(params) {
+                        const value = params[0].value;
+                        const count = sortedCounts[params[0].dataIndex];
+                        return `${params[0].name}<br/>` +
+                               `Average: SGD ${value.toLocaleString()}<br/>` +
+                               `Sample size: ${count}`;
+                    }
+                },
+                backgroundColor: '#f0f0f0',
+                grid: {
+                    left: '15%',
+                    right: '5%',
+                    bottom: '15%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'value',
+                    name: 'Annual Compensation (SGD)',
+                    nameLocation: 'middle',
+                    nameGap: 40,
+                    axisLabel: {
+                        formatter: value => value.toLocaleString()
+                    },
+                    splitLine: { show: false }
+                },
+                yAxis: {
+                    type: 'category',
+                    data: sortedFields,
+                    axisLabel: {
+                        interval: 0,
+                        color: '#333',
+                        width: 150,
+                        overflow: 'break'
+                    }
+                },
+                series: [{
+                    type: 'bar',
+                    data: sortedAverages,
+                    itemStyle: {
+                        color: '#5c258d'
+                    },
+                    label: {
+                        show: true,
+                        position: 'right',
+                        formatter: function(params) {
+                            return params.value.toLocaleString();
+                        },
+                        color: '#000'
+                    }
+                }]
             });
         }
     </script>
